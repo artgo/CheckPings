@@ -8,103 +8,50 @@ import scala.actors.Actor._
 import java.net.URL
 import scala.collection.mutable.HashMap
 
-object CheckPings extends App {
+  println("Init")
+
   val timeStart = System.nanoTime: Double
-  val urlListStr = """http://mirrors.163.com
-http://box-soft.com
-http://cygwin.mirrors.hoobly.com
-ftp://cygwin.mirrorcatalogs.com
-http://cygwin.mirrorcatalogs.com
-http://www.netgull.com
-ftp://cygwin.mirrors.pair.com
-http://cygwin.parentingamerica.com
-http://servingzone.com
-http://cygwin.skazkaforyou.com
+  val urlListStr = """http://apache.osuosl.org
+http://apache.petsads.us
+http://mirror.cogentco.com
+http://www.eng.lsu.edu
+http://apache.tradebit.com
+http://www.gtlib.gatech.edu
+http://mirror.cc.columbia.edu
+http://www.motorlogy.com
+http://apache.mirrors.lucidnetworks.net
 http://mirror.symnds.com
-http://tweedo.com
-ftp://mirrors.xmission.com
-http://mirrors.xmission.com
-ftp://lug.mtu.edu
-http://lug.mtu.edu
-ftp://mirror.cs.vt.edu
-http://mirror.cs.vt.edu
-ftp://mirror.mcs.anl.gov
-http://mirror.mcs.anl.gov
-ftp://mirror.internode.on.net
-http://mirror.internode.on.net
-http://piotrkosoft.net
-ftp://ftp.iasi.roedu.net
-ftp://mirror.steadfast.net
-http://mirror.steadfast.net
-ftp://mirrors.syringanetworks.net
-http://mirrors.syringanetworks.net
-ftp://sourceware.mirrors.tds.net
-http://sourceware.mirrors.tds.net
-http://cygwin.vc.ukrtel.net
-ftp://artfiles.org
-http://artfiles.org
-http://cygwin.cybermirror.org
-ftp://mirrors.dotsrc.org
-http://mirrors.dotsrc.org
-ftp://ftp.fedoramd.org
-http://repo.fedoramd.org
-ftp://mirrors.kernel.org
-http://mirrors.kernel.org
-ftp://ftp.mirrorservice.org
-http://www.mirrorservice.org
-ftp://mirror.team-cymru.org
-http://mirror.team-cymru.org
-ftp://ftp.univie.ac.at
-http://ftp.univie.ac.at
-ftp://mirror.aarnet.edu.au
-http://mirror.aarnet.edu.au
-ftp://ftp.easynet.be
-http://mirror.cpsc.ucalgary.ca
-ftp://mirror.csclub.uwaterloo.ca
-http://mirror.csclub.uwaterloo.ca
-ftp://mirror.switch.ch
-http://mirrors.ustc.edu.cn
-ftp://ftp.gwdg.de
-http://ftp.gwdg.de
-ftp://ftp-stud.hs-esslingen.de
-http://ftp-stud.hs-esslingen.de
-ftp://linux.rz.ruhr-uni-bochum.de
-http://linux.rz.ruhr-uni-bochum.de
-ftp://ftp.inf.tu-dresden.de
-http://ftp.inf.tu-dresden.de
-ftp://ftp.uni-kl.de
-http://ftp.uni-kl.de
-ftp://ftp.rediris.es
-http://ftp.rediris.es
-http://cygwin.cict.fr
-ftp://mirror.cict.fr
-ftp://ftp.ntua.gr
-http://ftp.cc.uoc.gr
-ftp://ftp.fsn.hu
-http://ftp.fsn.hu
-ftp://ftp.heanet.ie
-http://ftp.heanet.ie
-http://mirror.isoc.org.il
-ftp://ftp.iitm.ac.in
-http://ftp.iitm.ac.in
-ftp://ftp.jaist.ac.jp
-http://ftp.jaist.ac.jp
-ftp://ftp.yz.yamagata-u.ac.jp
-http://ftp.yz.yamagata-u.ac.jp
-ftp://ftp.iij.ad.jp
-http://ftp.iij.ad.jp
-http://cygwin.xl-mirror.nl
-ftp://cygwin.uib.no
-http://cygwin.uib.no
-ftp://ucmirror.canterbury.ac.nz
-http://ucmirror.canterbury.ac.nz
-ftp://ftp.eq.uc.pt
-http://ftp.eq.uc.pt
-ftp://mirrors.fe.up.pt
-http://mirrors.fe.up.pt
-ftp://ftp.sunet.se
-http://mirrors.mojhosting.sk
-http://cygwin.petsads.us"""
+http://mirror.metrocast.net
+http://apache.ziply.com
+http://www.alliedquotes.com
+http://www.trieuvan.com
+http://www.bizdirusa.com
+http://www.carfab.com
+http://mirrors.sonic.net
+http://www.fightrice.com
+http://mirror.sdunix.com
+http://www.globalish.com
+http://mirrors.ibiblio.org
+http://apache.mesi.com.ar
+http://mirror.olnevhost.net
+http://apache.spinellicreations.com
+http://apache.cs.utah.edu
+http://download.nextag.com
+http://apache.mirrors.hoobly.com
+http://www.reverse.net
+http://apache.mirrors.tds.net
+http://apache.mirrors.pair.com
+http://mirror.nexcess.net
+http://apache.claz.org
+http://mirrors.gigenet.com
+ftp://apache.mirrors.pair.com
+ftp://linux-files.com
+ftp://apache.mirrors.tds.net
+ftp://apache.cs.utah.edu
+ftp://apache.mirrorcatalogs.com
+ftp://ftp.osuosl.org
+http://www.us.apache.org
+http://www.eu.apache.org"""
 
   val allUrls = urlListStr.trim().split("\\s+")
   val hostToUrl = HashMap[String, String]()
@@ -119,13 +66,16 @@ http://cygwin.petsads.us"""
   })
   val hostsList = hostToUrl.keySet
   val pingMap: ConcurrentMap[String, Int] = new ConcurrentHashMap[String, Int]().asScala
-  val averageMsPattern = new Regex("""Average =\s+(\d+)ms""", "ms");
+  // WIN: val averageMsPattern = new Regex("""Average =\s+(\d+)ms""", "ms");
+  // format rtt min/avg/max/mdev = 86.038/86.164/86.267/0.353 ms
+  val averageMsPattern = new Regex("""rtt\s+min\/avg\/max\/mdev\s+=\s+[\d\.]+\/([\d\.]+)\/[\d\.]+\/[\d\.]+\s+ms""", "ms");
+
   val allFinishedLatch = new CountDownLatch(hostsList.size)
   print("Started")
 
   for (host <- hostsList) {
     actor {
-      val fullText = Seq("ping", host).lines_!.mkString(" ")
+      val fullText = Seq("ping", "-c", "10", "-i", "1", "-W", "30", host).lines_!.mkString(" ")
       val firstResult = averageMsPattern.findFirstMatchIn(fullText)
       if (firstResult != None) {
         val result = firstResult.get
@@ -143,4 +93,4 @@ http://cygwin.petsads.us"""
   best.foreach(t => println(t._2 + "\t" + hostToUrl.get(t._1).mkString))
   val timeEnd = System.nanoTime: Double
   println("\nElapsed time " + (timeEnd - timeStart) / 1000000000.0 + " secs")
-}
+  
