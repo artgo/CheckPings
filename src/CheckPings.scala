@@ -65,7 +65,7 @@ http://www.eu.apache.org"""
     }
   })
   val hostsList = hostToUrl.keySet
-  val pingMap: ConcurrentMap[String, Int] = new ConcurrentHashMap[String, Int]().asScala
+  val pingMap: ConcurrentMap[String, Double] = new ConcurrentHashMap[String, Int]().asScala
   // WIN: val averageMsPattern = new Regex("""Average =\s+(\d+)ms""", "ms");
   // format rtt min/avg/max/mdev = 86.038/86.164/86.267/0.353 ms
   val averageMsPattern = new Regex("""rtt\s+min\/avg\/max\/mdev\s+=\s+[\d\.]+\/([\d\.]+)\/[\d\.]+\/[\d\.]+\s+ms""", "ms");
@@ -79,7 +79,7 @@ http://www.eu.apache.org"""
       val firstResult = averageMsPattern.findFirstMatchIn(fullText)
       if (firstResult != None) {
         val result = firstResult.get
-        val pingMs = result.group("ms").toInt
+        val pingMs = result.group("ms").toDouble
         pingMap.put(host, pingMs)
       }
       print(".")
